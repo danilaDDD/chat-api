@@ -29,38 +29,6 @@ def client(settings) -> TestClient:
 )
 
 
-@pytest.fixture(scope="module")
-def primary_token_str() -> str:
-    return "f4uib483yr4894894"
-
-
-@pytest.fixture(scope="module")
-def password_service():
-    from app.services.password_service import PasswordService
-    return PasswordService()
-
-
-@pytest.fixture(scope="module")
-def jwt_token_service(settings) -> JWTTokenService:
-    return JWTTokenService(settings)
-
-
-@pytest.fixture(scope="function")
-def request_kwargs(primary_token_str) -> dict:
-    return {
-                "headers":{"Content-Type": "application/json",
-                           "X-Api-Key": primary_token_str}
-            }.copy()
-
-
 @pytest_asyncio.fixture(scope="function", autouse=True)
-async def clean_db_before_test(session_manager: SessionManager, primary_token_str: str):
-    async with session_manager.start_with_commit() as open_session_manager:
-        await open_session_manager.users.delete_all()
-        await open_session_manager.primary_tokens.delete_all()
-
-    async with session_manager.start_with_commit() as open_session_manager:
-        primary_token = PrimaryToken(name="test", token=primary_token_str)
-        await open_session_manager.primary_tokens.save(primary_token)
-
+async def clean_db_before_test(session_manager: SessionManager):
     yield
