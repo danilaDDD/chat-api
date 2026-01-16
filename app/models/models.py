@@ -9,7 +9,7 @@ from app.models.base import AbsCreated, AbsId
 class Chat(AbsId, AbsCreated):
     __tablename__ = "chats"
 
-    title: str = Column(String(100), nullable=False)
+    title: str = Column(String(200), nullable=False)
     messages: Mapped[List["Message"]] = relationship("Message", back_populates="chat", cascade="all, delete-orphan")
 
 
