@@ -48,6 +48,8 @@ class TestCreateChatRequest:
     async def test_when_invalid_request_then_return_422(self, request_json):
         resp = self._do_request(request_json)
         assert resp.status_code == 422
+        resp_body = resp.json()
+        assert "detail" in resp_body and len(resp_body["detail"]) > 0
 
 
     def _do_request(self, valid_request: dict) -> Response:
