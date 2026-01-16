@@ -1,12 +1,9 @@
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette.testclient import TestClient
 
 from app.main import app
-from app.models.models import PrimaryToken
-from app.services.jwt_token_service import JWTTokenService
 from db.connection import create_session_factory
 from db.session_manager import SessionManager
 
@@ -31,4 +28,6 @@ def client(settings) -> TestClient:
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def clean_db_before_test(session_manager: SessionManager):
+    async with session_manager.start_with_commit() as open_session_manager:
+        await open_session_manager.chats.delete_all()
     yield

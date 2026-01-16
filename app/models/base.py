@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import Column, Integer, DateTime, func
 from sqlalchemy.orm import declarative_base
 
@@ -18,4 +20,4 @@ class AbsId(Base):
 class AbsCreated(Base):
     __abstract__ = True
 
-    created_at = Column(DateTime(timezone=True), default=utcnow)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

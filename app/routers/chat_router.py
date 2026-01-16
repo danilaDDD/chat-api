@@ -1,11 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, HTTPException
 from starlette.status import HTTP_201_CREATED
 
 from app.schemas.requests import CreateChatRequest, CreateMessageRequest
 from app.schemas.responses import ChatResponse, MessageResponseEntity, ChatDetailsResponse
-from app.services import rest_chat_service
 from app.services.rest_chat_service import get_rest_chat_service, RestChatService
 
 chat_router = APIRouter(
@@ -22,9 +21,14 @@ chat_router = APIRouter(
                   })
 async def create_chat(
         request: CreateChatRequest,
-        rest_chat_service: RestChatService = Depends(get_rest_chat_service)) -> ChatResponse:
-    return await rest_chat_service.create_chat(request)
-
+        response: Response,
+        rest_chat_service: RestChatService = Depends(get_rest_chat_service),) -> ChatResponse:
+    try:
+        response.status_code = HTTP_201_CREATED
+        return await rest_chat_service.create_chat(request)
+    except HTTPException as e:
+        response.status_code = e.status_code
+        raise e
 
 @chat_router.post("/{chat_id}/messages",
                   responses={
