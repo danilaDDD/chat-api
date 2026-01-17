@@ -5,6 +5,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from app.repositories.chat_repository import ChatRepository
+from app.repositories.message_repository import MessageRepository
 from db.connection import get_session_factory
 
 
@@ -46,6 +47,10 @@ class SessionManager:
     @property
     def chats(self) -> ChatRepository:
         return ChatRepository(self._session)
+
+    @property
+    def messages(self) -> MessageRepository:
+        return MessageRepository(self._session)
 
 
 def get_session_manager(session_factory: async_sessionmaker = Depends(get_session_factory, use_cache=True)) -> SessionManager:

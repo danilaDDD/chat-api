@@ -23,25 +23,30 @@ async def create_chat(
         request: CreateChatRequest,
         response: Response,
         rest_chat_service: RestChatService = Depends(get_rest_chat_service),) -> ChatResponse:
-    try:
-        response.status_code = HTTP_201_CREATED
-        return await rest_chat_service.create_chat(request)
-    except HTTPException as e:
-        response.status_code = e.status_code
-        raise e
+
+    response.status_code = HTTP_201_CREATED
+    return await rest_chat_service.create_chat(request)
+
 
 @chat_router.post("/{chat_id}/messages",
                   responses={
                       201:{
                           "model": MessageResponseEntity,
                           "description": "Message created successfully."
+                      },
+                      404: {
+                          "description": "chat not found"
                       }
                   })
 async def create_chat_message(
         chat_id: int,
         request: CreateMessageRequest,
+        response: Response,
         rest_chat_service: RestChatService = Depends(get_rest_chat_service)) -> MessageResponseEntity:
+
+    response.status_code = HTTP_201_CREATED
     return await rest_chat_service.create_chat_message(chat_id, request)
+
 
 
 @chat_router.get("/{chat_id}/",
