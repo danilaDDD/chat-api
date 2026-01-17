@@ -73,7 +73,9 @@ async def get_chat_details(chat_id: int,
                         }}
                     )
 async def delete_chat(chat_id: int,
+                      response: Response,
                       rest_chat_service: RestChatService = Depends(get_rest_chat_service)) -> None:
+    response.status_code = 204
     await rest_chat_service.delete_chat(chat_id)
 
 

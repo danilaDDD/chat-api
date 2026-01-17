@@ -49,7 +49,14 @@ class RestChatService(BaseDBService):
             )
 
     async def delete_chat(self, chat_id: int) -> ChatResponse:
-        return ChatResponse(title="test", id=chat_id)
+        async with self.session_manager.start_with_commit() as session_manager:
+            chat = await session_manager.chats.get_by_id(chat_id)
+            if chat is None:
+                raise HTTPException(status_code=404, detail="Chat not found")
+
+            await session_manager.chats.delete_by_id(chat_id)
+
+            return ChatResponse(id=chat.id, title=chat.title, created_at=chat.created_at)
 
 
 def get_rest_chat_service(session_manager: SessionManager = Depends(get_session_manager)) -> RestChatService:
