@@ -6,6 +6,7 @@ from fastapi import Response
 
 from app.models.models import Chat, Message
 from db.session_manager import SessionManager
+from test.testutils.asserts import assert_error_response
 
 
 @pytest.mark.asyncio
@@ -59,9 +60,8 @@ class TestGetChatDetailsRequest:
 
     async def test_when_not_exist_chat_then_return_404(self):
         resp = self.do_request(chat_id=999)
-        assert resp.status_code == 404
-        json = resp.json()
-        assert len(json["detail"]) > 0
+
+        assert_error_response(resp, 404)
 
 
     def do_request(self, chat_id: int) -> Response:

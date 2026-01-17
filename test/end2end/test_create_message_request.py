@@ -4,6 +4,7 @@ from starlette.testclient import TestClient
 
 from app.models.models import Chat
 from db.session_manager import SessionManager
+from test.testutils.asserts import assert_error_response
 
 
 @pytest.mark.asyncio
@@ -45,9 +46,7 @@ class TestCreateMessageRequest:
         valid_data = {"text": "text"}
         resp = self.do_request(valid_data, chat_id=999)
 
-        assert resp.status_code == 404
-        json = resp.json()
-        assert len(json["detail"]) > 0
+        assert_error_response(resp, 404)
 
     @pytest.mark.parametrize("invalid_data", [
         {},
@@ -60,9 +59,7 @@ class TestCreateMessageRequest:
         chat_id = await self.save_chat()
         resp = self.do_request(invalid_data, chat_id)
 
-        assert resp.status_code == 422
-        json = resp.json()
-        assert len(json["detail"]) > 0
+        assert_error_response(resp, 422)
 
 
 

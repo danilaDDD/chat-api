@@ -5,6 +5,7 @@ from starlette.responses import Response
 from starlette.testclient import TestClient
 
 from db.session_manager import SessionManager
+from test.testutils.asserts import assert_error_response
 
 
 @pytest.mark.e2e
@@ -47,9 +48,7 @@ class TestCreateChatRequest:
     ])
     async def test_when_invalid_request_then_return_422(self, request_json):
         resp = self._do_request(request_json)
-        assert resp.status_code == 422
-        resp_body = resp.json()
-        assert "detail" in resp_body and len(resp_body["detail"]) > 0
+        assert_error_response(resp, 422)
 
 
     def _do_request(self, valid_request: dict) -> Response:
