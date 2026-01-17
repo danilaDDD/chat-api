@@ -28,7 +28,25 @@ class RestChatService(BaseDBService):
             return MessageResponseEntity(id=message.id, text=message.text, created_at=message.created_at)
 
     async def get_chat_details(self, chat_id: int) -> ChatDetailsResponse:
-        return ChatDetailsResponse(id=1, title="test", messages=[])
+        async with self.session_manager.start_without_commit() as session_manager:
+            chat = await session_manager.chats.get_by_id(chat_id)
+            if chat is None:
+                raise HTTPException(status_code=404, detail="Chat not found")
+
+            messages = (await session_manager
+                        .messages
+                        .get_by_chat_id_order_by_created_at(chat_id))
+            message_entities = [
+                MessageResponseEntity(id=message.id, text=message.text, created_at=message.created_at)
+                for message in messages
+            ]
+
+            return ChatDetailsResponse(
+                id=chat.id,
+                title=chat.title,
+                created_at=chat.created_at,
+                messages=message_entities
+            )
 
     async def delete_chat(self, chat_id: int) -> ChatResponse:
         return ChatResponse(title="test", id=chat_id)
