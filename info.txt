@@ -1,0 +1,251 @@
+Sending build context to Docker daemon    789kB
+Step 1/14 : FROM python:3.12-slim as builder
+ ---> c78a70d7588f
+Step 2/14 : WORKDIR /app
+ ---> Using cache
+ ---> cb8708d8206f
+Step 3/14 : RUN python -m venv /opt/venv
+ ---> Using cache
+ ---> 07048a71f3a9
+Step 4/14 : ENV PATH="/opt/venv/bin:$PATH"
+ ---> Using cache
+ ---> bde6eb822502
+Step 5/14 : COPY requirements.txt .
+ ---> Using cache
+ ---> a0ca75c7c055
+Step 6/14 : RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+ ---> Using cache
+ ---> 896c96693ebf
+Step 7/14 : FROM python:3.12-slim
+ ---> c78a70d7588f
+Step 8/14 : WORKDIR /app
+ ---> Using cache
+ ---> cb8708d8206f
+Step 9/14 : COPY --from=builder /opt/venv /opt/venv
+ ---> Using cache
+ ---> 35b2bdcc0deb
+Step 10/14 : ENV PATH="/opt/venv/bin:$PATH"     PYTHONUNBUFFERED=1     PYTHONDONTWRITEBYTECODE=1
+ ---> Using cache
+ ---> 9f89782ca0f0
+Step 11/14 : RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+ ---> Using cache
+ ---> e4090eb52825
+Step 12/14 : USER appuser
+ ---> Using cache
+ ---> f0e39442f8d3
+Step 13/14 : COPY . .
+ ---> 8c390fce2f17
+Step 14/14 : CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+ ---> Running in fca7c8c212fa
+ ---> Removed intermediate container fca7c8c212fa
+ ---> 703b3b3e2bec
+Successfully built 703b3b3e2bec
+Successfully tagged chat-api_app:latest
+Attaching to fastapi_app
+[36mfastapi_app |[0m INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+[36mfastapi_app |[0m INFO  [alembic.runtime.migration] Will assume transactional DDL.
+[36mfastapi_app |[0m INFO:     Started server process [10]
+[36mfastapi_app |[0m INFO:     Waiting for application startup.
+[36mfastapi_app |[0m INFO:     Application startup complete.
+[36mfastapi_app |[0m INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[36mfastapi_app |[0m INFO:     172.20.0.1:48484 - "GET /docs HTTP/1.1" 200 OK
+[36mfastapi_app |[0m INFO:     172.20.0.1:48484 - "GET /openapi.json HTTP/1.1" 200 OK
+[36mfastapi_app |[0m 2026-01-19 02:21:48,307 error_logger ERROR Unhandled exception: error
+[36mfastapi_app |[0m Traceback (most recent call last):
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 151, in call_next
+[36mfastapi_app |[0m     message = await recv_stream.receive()
+[36mfastapi_app |[0m               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+[36mfastapi_app |[0m     raise EndOfStream from None
+[36mfastapi_app |[0m anyio.EndOfStream
+[36mfastapi_app |[0m 
+[36mfastapi_app |[0m During handling of the above exception, another exception occurred:
+[36mfastapi_app |[0m 
+[36mfastapi_app |[0m Traceback (most recent call last):
+[36mfastapi_app |[0m   File "/app/app/middlewares/logging_middleware.py", line 10, in dispatch
+[36mfastapi_app |[0m     response = await call_next(request)
+[36mfastapi_app |[0m                ^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+[36mfastapi_app |[0m     raise app_exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+[36mfastapi_app |[0m     await self.app(scope, receive_or_disconnect, send_no_error)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[36mfastapi_app |[0m     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     await app(scope, receive, sender)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[36mfastapi_app |[0m     await self.app(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+[36mfastapi_app |[0m     await self.middleware_stack(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+[36mfastapi_app |[0m     await route.handle(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+[36mfastapi_app |[0m     await self.app(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 123, in app
+[36mfastapi_app |[0m     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     await app(scope, receive, sender)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 109, in app
+[36mfastapi_app |[0m     response = await f(request)
+[36mfastapi_app |[0m                ^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 389, in app
+[36mfastapi_app |[0m     raw_response = await run_endpoint_function(
+[36mfastapi_app |[0m                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 288, in run_endpoint_function
+[36mfastapi_app |[0m     return await dependant.call(**values)
+[36mfastapi_app |[0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/app/app/routers/chat_router.py", line 78, in delete_chat
+[36mfastapi_app |[0m     raise RuntimeError("error")
+[36mfastapi_app |[0m RuntimeError: error
+[36mfastapi_app |[0m INFO:     172.20.0.1:48488 - "DELETE /chats/3/ HTTP/1.1" 500 Internal Server Error
+[36mfastapi_app |[0m ERROR:    Exception in ASGI application
+[36mfastapi_app |[0m   + Exception Group Traceback (most recent call last):
+[36mfastapi_app |[0m   |   File "/opt/venv/lib/python3.12/site-packages/starlette/_utils.py", line 79, in collapse_excgroups
+[36mfastapi_app |[0m   |     yield
+[36mfastapi_app |[0m   |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 183, in __call__
+[36mfastapi_app |[0m   |     async with anyio.create_task_group() as task_group:
+[36mfastapi_app |[0m   |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   |   File "/opt/venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 781, in __aexit__
+[36mfastapi_app |[0m   |     raise BaseExceptionGroup(
+[36mfastapi_app |[0m   | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+[36mfastapi_app |[0m   +-+---------------- 1 ----------------
+[36mfastapi_app |[0m     | Traceback (most recent call last):
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+[36mfastapi_app |[0m     |     result = await app(  # type: ignore[func-returns-value]
+[36mfastapi_app |[0m     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+[36mfastapi_app |[0m     |     return await self.app(scope, receive, send)
+[36mfastapi_app |[0m     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1133, in __call__
+[36mfastapi_app |[0m     |     await super().__call__(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/applications.py", line 113, in __call__
+[36mfastapi_app |[0m     |     await self.middleware_stack(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+[36mfastapi_app |[0m     |     raise exc
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+[36mfastapi_app |[0m     |     await self.app(scope, receive, _send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 182, in __call__
+[36mfastapi_app |[0m     |     with recv_stream, send_stream, collapse_excgroups():
+[36mfastapi_app |[0m     |                                    ^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/usr/local/lib/python3.12/contextlib.py", line 158, in __exit__
+[36mfastapi_app |[0m     |     self.gen.throw(value)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/_utils.py", line 85, in collapse_excgroups
+[36mfastapi_app |[0m     |     raise exc
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 184, in __call__
+[36mfastapi_app |[0m     |     response = await self.dispatch_func(request, call_next)
+[36mfastapi_app |[0m     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/app/app/middlewares/logging_middleware.py", line 16, in dispatch
+[36mfastapi_app |[0m     |     raise e
+[36mfastapi_app |[0m     |   File "/app/app/middlewares/logging_middleware.py", line 10, in dispatch
+[36mfastapi_app |[0m     |     response = await call_next(request)
+[36mfastapi_app |[0m     |                ^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+[36mfastapi_app |[0m     |     raise app_exc
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+[36mfastapi_app |[0m     |     await self.app(scope, receive_or_disconnect, send_no_error)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[36mfastapi_app |[0m     |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     |     raise exc
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     |     await app(scope, receive, sender)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[36mfastapi_app |[0m     |     await self.app(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+[36mfastapi_app |[0m     |     await self.middleware_stack(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+[36mfastapi_app |[0m     |     await route.handle(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+[36mfastapi_app |[0m     |     await self.app(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 123, in app
+[36mfastapi_app |[0m     |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     |     raise exc
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     |     await app(scope, receive, sender)
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 109, in app
+[36mfastapi_app |[0m     |     response = await f(request)
+[36mfastapi_app |[0m     |                ^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 389, in app
+[36mfastapi_app |[0m     |     raw_response = await run_endpoint_function(
+[36mfastapi_app |[0m     |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 288, in run_endpoint_function
+[36mfastapi_app |[0m     |     return await dependant.call(**values)
+[36mfastapi_app |[0m     |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m     |   File "/app/app/routers/chat_router.py", line 78, in delete_chat
+[36mfastapi_app |[0m     |     raise RuntimeError("error")
+[36mfastapi_app |[0m     | RuntimeError: error
+[36mfastapi_app |[0m     +------------------------------------
+[36mfastapi_app |[0m 
+[36mfastapi_app |[0m During handling of the above exception, another exception occurred:
+[36mfastapi_app |[0m 
+[36mfastapi_app |[0m Traceback (most recent call last):
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+[36mfastapi_app |[0m     result = await app(  # type: ignore[func-returns-value]
+[36mfastapi_app |[0m              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+[36mfastapi_app |[0m     return await self.app(scope, receive, send)
+[36mfastapi_app |[0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/applications.py", line 1133, in __call__
+[36mfastapi_app |[0m     await super().__call__(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/applications.py", line 113, in __call__
+[36mfastapi_app |[0m     await self.middleware_stack(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 186, in __call__
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/errors.py", line 164, in __call__
+[36mfastapi_app |[0m     await self.app(scope, receive, _send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 182, in __call__
+[36mfastapi_app |[0m     with recv_stream, send_stream, collapse_excgroups():
+[36mfastapi_app |[0m                                    ^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/usr/local/lib/python3.12/contextlib.py", line 158, in __exit__
+[36mfastapi_app |[0m     self.gen.throw(value)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_utils.py", line 85, in collapse_excgroups
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 184, in __call__
+[36mfastapi_app |[0m     response = await self.dispatch_func(request, call_next)
+[36mfastapi_app |[0m                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/app/app/middlewares/logging_middleware.py", line 16, in dispatch
+[36mfastapi_app |[0m     raise e
+[36mfastapi_app |[0m   File "/app/app/middlewares/logging_middleware.py", line 10, in dispatch
+[36mfastapi_app |[0m     response = await call_next(request)
+[36mfastapi_app |[0m                ^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 159, in call_next
+[36mfastapi_app |[0m     raise app_exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 144, in coro
+[36mfastapi_app |[0m     await self.app(scope, receive_or_disconnect, send_no_error)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+[36mfastapi_app |[0m     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     await app(scope, receive, sender)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+[36mfastapi_app |[0m     await self.app(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 716, in __call__
+[36mfastapi_app |[0m     await self.middleware_stack(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 736, in app
+[36mfastapi_app |[0m     await route.handle(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/routing.py", line 290, in handle
+[36mfastapi_app |[0m     await self.app(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 123, in app
+[36mfastapi_app |[0m     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+[36mfastapi_app |[0m     raise exc
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+[36mfastapi_app |[0m     await app(scope, receive, sender)
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 109, in app
+[36mfastapi_app |[0m     response = await f(request)
+[36mfastapi_app |[0m                ^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 389, in app
+[36mfastapi_app |[0m     raw_response = await run_endpoint_function(
+[36mfastapi_app |[0m                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/opt/venv/lib/python3.12/site-packages/fastapi/routing.py", line 288, in run_endpoint_function
+[36mfastapi_app |[0m     return await dependant.call(**values)
+[36mfastapi_app |[0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[36mfastapi_app |[0m   File "/app/app/routers/chat_router.py", line 78, in delete_chat
+[36mfastapi_app |[0m     raise RuntimeError("error")
+[36mfastapi_app |[0m RuntimeError: error
