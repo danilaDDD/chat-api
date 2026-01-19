@@ -5,3 +5,5 @@
 .pytest_cache/
 /.coverage
 /logs/*.log
+/env/
+/venv/
