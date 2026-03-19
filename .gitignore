@@ -1,9 +1,9 @@
-/conf/.env.*
-/.idea/
-/.vscode/.*
+conf/.env.*
+.idea/
+.vscode/.*
 .DS_Store
 .pytest_cache/
-/.coverage
-/logs/*.log
-/env/
-/venv/
+.coverage
+logs/*.log
+env/
+venv/

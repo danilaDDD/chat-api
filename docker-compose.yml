@@ -1,45 +1,56 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: db
-    env_file:
-      - ./conf/.env.dev
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#    ports:
-#      - "54321:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
   app:
     build:
       context: .
       dockerfile: docker/app.Dockerfile
-    container_name: fastapi_app
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
+    container_name: chat_api_app
     env_file:
-      - ./conf/.env.dev
-    environment:
-      ENV: dev
-      DB_HOST: db
+      - conf/.env.dev
+    ports:
+      - "8002:8000"
+    depends_on:
+      - app_db
     volumes:
-      - .:/app
       - ./logs:/app/logs
-    networks:
-      - app-network
+
+  app_db:
+    image: postgres:16-alpine
+    container_name: chat_api_db
+    env_file:
+      - conf/.env.db
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  test_app:
+    build:
+      context: .
+      dockerfile: docker/test.Dockerfile
+    container_name: chat_api_test_app
+    env_file:
+      - conf/.env.test
+    environment:
+      - ENV=test
+    depends_on:
+      - test_db
+    volumes:
+      - ./reports:/app/reports
+
+  test_db:
+    image: postgres:16-alpine
+    container_name: chat_api_test_db
+    env_file:
+      - conf/.env.testdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - test_db_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
+  db_data:
+    driver: local
+  test_db_data:
+    driver: local

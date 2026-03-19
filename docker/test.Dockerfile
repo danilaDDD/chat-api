@@ -20,6 +20,4 @@ WORKDIR /app
 
 COPY . .
 
-EXPOSE 8000
-#FIXME сделать переопределение позиционного аргумента первичного токена через .env-файл
-CMD ["sh", "-c", "./sh/run_app.sh"]
+CMD ["sh", "-c", "./sh/run_test.sh"]
